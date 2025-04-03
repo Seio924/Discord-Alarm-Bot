@@ -1,6 +1,9 @@
+require('dotenv').config();
+
 const { Client, GatewayIntentBits, Events } = require('discord.js');
-const { token } = require('./config.json');
 const { startReminder, stopReminder } = require('./reminderManager');
+
+const token = process.env.TOKEN;
 
 const client = new Client({
   intents: [
