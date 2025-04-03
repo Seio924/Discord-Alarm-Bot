@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { scheduleReminder, stopReminder, loadReminders } = require('./reminderManager');
-const registerCommands = require('./registerCommands');
+const registerCommandsToGuild = require('./registerCommands');
 
 const token = process.env.TOKEN;
 
@@ -16,10 +16,14 @@ const client = new Client({
   ],
 });
 
-client.once(Events.ClientReady, async () => {
+client.once(Events.ClientReady, () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
-  await registerCommands(client, token);
   loadReminders(client);
+});
+
+client.on(Events.GuildCreate, async guild => {
+  console.log(`🆕 ${guild.name} 서버에 초대됨`);
+  await registerCommandsToGuild(client.user.id, guild.id, token);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
