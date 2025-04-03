@@ -3,9 +3,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const { Client, GatewayIntentBits, Events } = require('discord.js');
-const { startReminder, stopReminder } = require('./reminderManager');
-
-const token = process.env.TOKEN;
+const { scheduleReminder, stopReminder, loadReminders } = require('./reminderManager');
 
 const client = new Client({
   intents: [
@@ -15,8 +13,9 @@ const client = new Client({
   ],
 });
 
-client.once(Events.ClientReady, c => {
-  console.log(`✅ Logged in as ${c.user.tag}`);
+client.once(Events.ClientReady, () => {
+  console.log(`✅ Logged in as ${client.user.tag}`);
+  loadReminders(client);
 });
 
 client.on(Events.InteractionCreate, async interaction => {
@@ -30,7 +29,7 @@ client.on(Events.InteractionCreate, async interaction => {
     const rawMessage = options.getString('메시지');
 
     await interaction.reply('⏱️ 알림을 설정 중입니다...');
-    startReminder(user.id, channel, startStr, intervalStr, rawMessage);
+    scheduleReminder(user.id, channel, startStr, intervalStr, rawMessage);
   }
 
   if (commandName === '알림끄기') {
@@ -39,4 +38,4 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-client.login(token);
+client.login(process.env.TOKEN);

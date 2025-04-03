@@ -22,7 +22,6 @@ function formatTemplate(template) {
   const dd = String(now.getDate()).padStart(2, '0');
   const hh = String(now.getHours()).padStart(2, '0');
   const min = String(now.getMinutes()).padStart(2, '0');
-
   const days = ['일', '월', '화', '수', '목', '금', '토'];
   const day = days[now.getDay()];
 
@@ -32,7 +31,18 @@ function formatTemplate(template) {
     .replace('${시간}', `${hh}:${min}`);
 }
 
+function convertMsToCron(ms) {
+  const minutes = Math.floor(ms / 60000);
+  if (minutes < 1) return '* * * * *';
+  if (minutes < 60) return `*/${minutes} * * * *`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `0 */${hours} * * *`;
+  const days = Math.floor(hours / 24);
+  return `0 0 */${days} * *`;
+}
+
 module.exports = {
   parseInterval,
   formatTemplate,
+  convertMsToCron,
 };
