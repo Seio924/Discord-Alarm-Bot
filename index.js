@@ -1,8 +1,7 @@
-// 1. 주요 클래스 가져오기
-const { Client, Events, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { token } = require('./config.json');
+const { startReminder, stopReminder } = require('./reminderManager');
 
-// 2. 클라이언트 객체 생성 (Guilds관련, 메시지관련 인텐트 추가)
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -11,17 +10,28 @@ const client = new Client({
   ],
 });
 
-// 3. 봇이 준비됐을때 한번만(once) 표시할 메시지
-client.once(Events.ClientReady, readyClient => {
-  console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+client.once(Events.ClientReady, c => {
+  console.log(`✅ Logged in as ${c.user.tag}`);
 });
 
-// 4. 누군가 ping을 작성하면 pong으로 답장한다.
-client.on('messageCreate', message => {
-  if (message.content == 'ping') {
-    message.reply('pong');
+client.on(Events.InteractionCreate, async interaction => {
+  if (!interaction.isChatInputCommand()) return;
+
+  const { commandName, options, user, channel } = interaction;
+
+  if (commandName === '반복알림') {
+    const startStr = options.getString('시작시간');
+    const intervalStr = options.getString('반복간격');
+    const rawMessage = options.getString('메시지');
+
+    await interaction.reply('⏱️ 알림을 설정 중입니다...');
+    startReminder(user.id, channel, startStr, intervalStr, rawMessage);
+  }
+
+  if (commandName === '알림끄기') {
+    await interaction.reply('🛑 알림을 끄는 중입니다...');
+    stopReminder(user.id, channel);
   }
 });
 
-// 5. 시크릿키(토큰)을 통해 봇 로그인 실행
 client.login(token);
