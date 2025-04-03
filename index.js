@@ -4,7 +4,7 @@ const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { startReminder, stopReminder } = require('./reminderManager');
 
 const token = process.env.TOKEN;
-
+console.log(token);
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
