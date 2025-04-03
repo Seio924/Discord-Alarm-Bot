@@ -1,6 +1,3 @@
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('TOKEN:', process.env.TOKEN);
-
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
@@ -9,7 +6,7 @@ const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { startReminder, stopReminder } = require('./reminderManager');
 
 const token = process.env.TOKEN;
-console.log(token);
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
