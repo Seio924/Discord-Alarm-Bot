@@ -4,6 +4,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { Client, GatewayIntentBits, Events } = require('discord.js');
 const { scheduleReminder, stopReminder, loadReminders } = require('./reminderManager');
+const registerCommands = require('./registerCommands');
+
+const token = process.env.TOKEN;
 
 const client = new Client({
   intents: [
@@ -13,8 +16,9 @@ const client = new Client({
   ],
 });
 
-client.once(Events.ClientReady, () => {
+client.once(Events.ClientReady, async () => {
   console.log(`✅ Logged in as ${client.user.tag}`);
+  await registerCommands(client, token);
   loadReminders(client);
 });
 
@@ -38,4 +42,4 @@ client.on(Events.InteractionCreate, async interaction => {
   }
 });
 
-client.login(process.env.TOKEN);
+client.login(token);
