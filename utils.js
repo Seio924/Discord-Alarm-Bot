@@ -1,3 +1,9 @@
+const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const tz = require('dayjs/plugin/timezone');
+dayjs.extend(utc);
+dayjs.extend(tz);
+
 function parseInterval(str) {
   const match = str.match(/^(\d+)([smhd])$/); // s초, m분, h시간, d일
   if (!match) return null;
@@ -16,14 +22,15 @@ function parseInterval(str) {
 }
 
 function formatTemplate(template) {
-  const now = new Date();
-  const yyyy = now.getFullYear();
-  const mm = String(now.getMonth() + 1).padStart(2, '0');
-  const dd = String(now.getDate()).padStart(2, '0');
-  const hh = String(now.getHours()).padStart(2, '0');
-  const min = String(now.getMinutes()).padStart(2, '0');
+  const now = dayjs().tz('Asia/Seoul');
+
+  const yyyy = now.year();
+  const mm = String(now.month() + 1).padStart(2, '0');
+  const dd = String(now.date()).padStart(2, '0');
+  const hh = String(now.hour()).padStart(2, '0');
+  const min = String(now.minute()).padStart(2, '0');
   const days = ['일', '월', '화', '수', '목', '금', '토'];
-  const day = days[now.getDay()];
+  const day = days[now.day()];
 
   return template
     .replace('${날짜}', `${yyyy}-${mm}-${dd}`)
